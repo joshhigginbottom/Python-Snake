@@ -15,6 +15,8 @@ class Snake:
 		self.snake_length = len(self.positions)
 		self.x_speed = 1
 		self.y_speed = 0
+		self.directions = ['N','W','F','E','S']
+		self.head_direction = 'E'
 		
 	def move(self, surface):
 		#print(self.positions)
@@ -33,6 +35,7 @@ class Snake:
 				else:
 					self.positions[x][0] = self.positions[x][0] + (1 * self.x_speed)
 					self.positions[x][1] = self.positions[x][1] + (1 * self.y_speed)
+					self.head_direction = self.directions[(self.x_speed + (2*self.y_speed) + 2)]
 			else:
 				self.positions[x][0] = self.positions[x + 1][0]
 				self.positions[x][1] = self.positions[x + 1][1]
@@ -66,35 +69,38 @@ def main():
 	going = True
 	
 	snake_move_event = pg.event.custom_type()
-	pg.time.set_timer(snake_move_event, 40)
+	#pg.time.set_timer(snake_move_event, 40)
 	
 	while going:
-		clock.tick(60)
 		
 		for event in pg.event.get():
-			if event.type == snake_move_event:
-				snake.move(screen)
 			if event.type == pg.QUIT:
 				going = False
 			if event.type == pg.KEYDOWN:
 				if event.key == pg.K_SPACE:
 					food.move(screen)
 				elif event.key == pg.K_DOWN:
-					if snake.y_speed != -1:
+					if snake.head_direction != 'N':
 						snake.x_speed = 0
 						snake.y_speed = 1
 				elif event.key == pg.K_UP:
-					if snake.y_speed != 1:
+					if snake.head_direction != 'S':
 						snake.x_speed = 0
 						snake.y_speed = -1
 				elif event.key == pg.K_LEFT:
-					if snake.x_speed != 1:
+					if snake.head_direction != 'E':
 						snake.x_speed = -1
 						snake.y_speed = 0
 				elif event.key == pg.K_RIGHT:
-					if snake.x_speed != -1:
+					if snake.head_direction != 'W':
 						snake.x_speed = 1
 						snake.y_speed = 0
+			#if event.type == snake_move_event:
+			#	snake.move(screen)
+		
+		snake.move(screen)
+		
+		print(snake.head_direction)
 		
 		if snake.positions[snake.snake_length - 1] == food.pos:
 			food.move(screen)
@@ -112,6 +118,8 @@ def main():
 		screen.set_at(food.pos,(0,0,0))
 		#Update display surface to screen
 		pg.display.flip()
+		
+		clock.tick(20)
 		
 	pg.quit()
 	
